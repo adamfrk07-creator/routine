@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#0a0a0a">
+<title>ADAM. — Daily Routine</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0a0a0a;--card:#141414;--card2:#1a1a1a;--border:#252525;
+  --accent:#AAFF47;--accent-dim:rgba(170,255,71,0.12);--accent-dim2:rgba(170,255,71,0.06);
+  --text:#f0eeea;--muted:#6a6a6a;--muted2:#444;--r:12px;--rs:8px;
+}
+.weekend-mode{
+  --accent:#47CFFF;--accent-dim:rgba(71,207,255,0.12);--accent-dim2:rgba(71,207,255,0.06);
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100dvh;padding-bottom:80px;max-width:430px;margin:0 auto}
+.hero{position:relative;height:220px;overflow:hidden}
+.hero-img{width:100%;height:100%;object-fit:cover;filter:brightness(.45)}
+.hero-grad{position:absolute;inset:0;background:linear-gradient(to bottom,rgba(10,10,10,0) 30%,rgba(10,10,10,1) 100%)}
+.hero-content{position:absolute;bottom:0;left:0;right:0;padding:0 20px 18px}
+.hero-name{font-family:'Bebas Neue',sans-serif;font-size:52px;letter-spacing:2px;color:#fff;line-height:1;margin-bottom:2px}
+.hero-name span{color:var(--accent)}
+.hero-date{font-size:11px;color:var(--muted);letter-spacing:.04em;margin-bottom:10px}
+.badge{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:20px;border:1px solid var(--accent);font-size:10px;font-weight:600;color:var(--accent);letter-spacing:.08em}
+.badge-dot{width:6px;height:6px;border-radius:50%;background:var(--accent);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.mode-toggle{position:absolute;top:14px;right:14px;background:rgba(10,10,10,.6);border:1px solid var(--border);border-radius:20px;padding:5px 11px;font-size:10px;color:var(--muted);cursor:pointer;backdrop-filter:blur(8px);font-family:'DM Sans',sans-serif;font-weight:500;letter-spacing:.04em}
+.content{padding:14px 14px 0}
+.we-banner{background:var(--accent-dim2);border:0.5px solid var(--accent);border-radius:var(--r);padding:10px 14px;margin-bottom:10px;align-items:center;gap:8px;font-size:12px;color:var(--accent);font-weight:500;display:none}
+.we-banner.show{display:flex}
+.streak-card{background:var(--card);border:0.5px solid var(--border);border-radius:var(--r);padding:14px 16px;margin-bottom:10px;display:flex;align-items:center;gap:12px}
+.streak-left{flex:1}
+.streak-num{font-family:'Bebas Neue',sans-serif;font-size:38px;color:var(--text);line-height:1}
+.streak-sub{font-size:11px;color:var(--muted);letter-spacing:.03em;margin-top:1px}
+.streak-stars{display:flex;gap:3px}
+.star{font-size:13px;opacity:.2}
+.star.lit{opacity:1;filter:drop-shadow(0 0 3px gold)}
+.stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}
+.stat-card{background:var(--card);border:0.5px solid var(--border);border-radius:var(--r);padding:14px 12px;text-align:center}
+.stat-val{font-family:'Bebas Neue',sans-serif;font-size:32px;line-height:1;margin-bottom:2px}
+.stat-val.c{color:var(--accent)}
+.stat-lbl{font-size:9px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase}
+.sec-header{display:flex;align-items:center;justify-content:space-between;margin:18px 0 8px}
+.sec-pill{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:20px;border:1px solid var(--accent);font-size:9px;font-weight:700;color:var(--accent);letter-spacing:.1em;text-transform:uppercase}
+.sec-pill-dot{width:5px;height:5px;border-radius:50%;background:var(--accent)}
+.sec-time{font-size:10px;color:var(--muted)}
+.tasks-wrap{background:var(--card);border:0.5px solid var(--border);border-radius:var(--r);overflow:hidden}
+.task-row{display:flex;align-items:center;gap:12px;padding:13px 14px;border-bottom:0.5px solid var(--border);cursor:pointer;transition:background .1s}
+.task-row:last-child{border-bottom:none}
+.task-row:active{background:var(--card2)}
+.task-row.done .task-name{color:var(--muted);text-decoration:line-through;text-decoration-color:var(--muted2)}
+.task-row.done .task-sub,.task-row.done .task-time{color:var(--muted2)}
+.task-row.done .task-cb{background:var(--accent);border-color:var(--accent)}
+.task-icon{width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0}
+.task-body{flex:1;min-width:0}
+.task-name{font-size:13px;font-weight:500;color:var(--text);line-height:1.25}
+.task-sub{font-size:11px;color:var(--muted);margin-top:1px}
+.task-time{font-size:10px;color:var(--muted);text-align:right;flex-shrink:0;min-width:52px;font-variant-numeric:tabular-nums}
+.task-cb{width:20px;height:20px;border-radius:5px;border:1.5px solid var(--border);flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .15s;margin-left:4px;background:transparent}
+.habits-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.habit-card{background:var(--card);border:0.5px solid var(--border);border-radius:var(--r);padding:13px 14px;display:flex;align-items:center;gap:10px;cursor:pointer;transition:all .15s}
+.habit-card:active{background:var(--card2)}
+.habit-card.done{border-color:var(--accent);background:var(--accent-dim2)}
+.habit-icon{font-size:18px;flex-shrink:0}
+.habit-lbl{font-size:12px;font-weight:500;color:var(--muted);flex:1}
+.habit-card.done .habit-lbl{color:var(--text)}
+.habit-check{width:16px;height:16px;border-radius:4px;border:1.5px solid var(--border);flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .15s}
+.habit-card.done .habit-check{background:var(--accent);border-color:var(--accent)}
+.hydra-card{background:var(--card);border:0.5px solid var(--border);border-radius:var(--r);padding:16px}
+.hydra-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:4px}
+.hydra-title{font-size:13px;font-weight:500}
+.hydra-sub{font-size:10px;color:var(--muted);margin-top:2px}
+.hydra-val{font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--accent);letter-spacing:1px}
+.drops-row{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+.drop-btn{width:32px;height:32px;border-radius:50%;border:1.5px solid var(--border);background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;transition:all .15s;color:var(--muted)}
+.drop-btn.filled{border-color:var(--accent);background:var(--accent-dim)}
+.drop-btn:active{transform:scale(.9)}
+.hydra-scale{display:flex;gap:4px;margin-top:8px}
+.hydra-mark{font-size:9px;color:var(--muted2);flex:1;text-align:center}
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;max-width:430px;margin:0 auto;background:rgba(10,10,10,.95);border-top:0.5px solid var(--border);display:flex;padding:8px 0 14px;backdrop-filter:blur(12px)}
+.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;opacity:.4}
+.nav-item.active{opacity:1}
+.nav-icon{font-size:20px}
+.nav-lbl{font-size:9px;color:var(--muted);letter-spacing:.06em;text-transform:uppercase}
+.nav-item.active .nav-lbl{color:var(--accent)}
+.action-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.act-btn{padding:12px;border-radius:var(--rs);border:0.5px solid var(--border);background:var(--card);color:var(--muted);font-size:12px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;text-align:center}
+.act-btn:active{background:var(--card2)}
+.act-btn.accent{border-color:var(--accent);color:var(--accent);background:var(--accent-dim2)}
+.toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%) translateY(20px);background:#e0ddd6;color:#111;font-size:12px;font-weight:500;padding:9px 18px;border-radius:20px;opacity:0;transition:all .22s;white-space:nowrap;z-index:99;pointer-events:none}
+.toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+.ic-green{background:rgba(170,255,71,.10)}
+.ic-blue{background:rgba(91,143,255,.10)}
+.ic-orange{background:rgba(255,154,60,.10)}
+.ic-pink{background:rgba(255,110,180,.10)}
+.ic-teal{background:rgba(60,255,208,.10)}
+.ic-red{background:rgba(255,92,92,.10)}
+.ic-purple{background:rgba(180,120,255,.10)}
+.ic-yellow{background:rgba(255,220,60,.10)}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <img class="hero-img" id="hero-img" src="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=800&q=80" alt="" onerror="this.style.display='none'">
+  <div class="hero-grad"></div>
+  <button class="mode-toggle" id="mode-toggle-btn" onclick="manualToggle()">Switch mode</button>
+  <div class="hero-content">
+    <div class="hero-name">ADAM<span>.</span></div>
+    <div class="hero-date" id="hero-date"></div>
+    <div class="badge"><span class="badge-dot"></span><span id="badge-text">WEEKDAY MODE</span></div>
+  </div>
+</div>
+
+<div class="content">
+  <div class="we-banner" id="we-banner">🌙 Weekend mode — all times shifted +1 hour</div>
+
+  <div class="streak-card">
+    <div style="font-size:26px">🔥</div>
+    <div class="streak-left">
+      <div class="streak-num" id="streak-num">0</div>
+      <div class="streak-sub" id="streak-sub">0 DAY STREAK · 0/15 DONE</div>
+    </div>
+    <div class="streak-stars" id="streak-stars"></div>
+  </div>
+
+  <div class="stats-row">
+    <div class="stat-card"><div class="stat-val c" id="sv-done">0</div><div class="stat-lbl">Done</div></div>
+    <div class="stat-card"><div class="stat-val" id="sv-rem">15</div><div class="stat-lbl">Remaining</div></div>
+    <div class="stat-card"><div class="stat-val c" id="sv-pct">0%</div><div class="stat-lbl">Complete</div></div>
+  </div>
+
+  <div class="sec-header">
+    <div class="sec-pill"><span class="sec-pill-dot"></span>Morning</div>
+    <div class="sec-time" id="morning-range">6:30 → 6:40</div>
+  </div>
+  <div class="tasks-wrap" id="morning-tasks"></div>
+
+  <div class="sec-header">
+    <div class="sec-pill"><span class="sec-pill-dot"></span>Evening</div>
+    <div class="sec-time" id="evening-range">20:00 → 22:15</div>
+  </div>
+  <div class="tasks-wrap" id="evening-tasks"></div>
+
+  <div class="sec-header">
+    <div class="sec-pill"><span class="sec-pill-dot"></span>Daily Habits</div>
+  </div>
+  <div class="habits-grid" id="habits-grid"></div>
+
+  <div class="sec-header">
+    <div class="sec-pill"><span class="sec-pill-dot"></span>Hydration</div>
+    <div class="sec-time">Goal: 2.5 L</div>
+  </div>
+  <div class="hydra-card">
+    <div class="hydra-top">
+      <div><div class="hydra-title">Water intake</div><div class="hydra-sub">Tap each drop · 1 drop = 0.25 L</div></div>
+      <div class="hydra-val" id="hydra-val">0.0L</div>
+    </div>
+    <div class="drops-row" id="drops-row"></div>
+    <div class="hydra-scale">
+      <div class="hydra-mark">0.5</div><div class="hydra-mark">1.0</div><div class="hydra-mark">1.5</div><div class="hydra-mark">2.0</div><div class="hydra-mark">2.5 ✓</div>
+    </div>
+  </div>
+
+  <div class="action-row" style="margin-top:14px">
+    <button class="act-btn" onclick="resetDay()">Reset today</button>
+    <button class="act-btn accent" onclick="exportGemini()">Export to Gemini ↗</button>
+  </div>
+  <p style="text-align:center;font-size:10px;color:var(--muted);margin-top:10px;padding-bottom:4px">Chrome ⋮ → Add to Home Screen to use as an app</p>
+</div>
+
+<nav class="bottom-nav">
+  <div class="nav-item active"><div class="nav-icon">🏠</div><div class="nav-lbl">Today</div></div>
+  <div class="nav-item"><div class="nav-icon">📊</div><div class="nav-lbl">Streaks</div></div>
+  <div class="nav-item"><div class="nav-icon">⚙️</div><div class="nav-lbl">Settings</div></div>
+</nav>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const MORNING_DEF=[
+  {id:'m1',icon:'⚡',ic:'ic-orange',label:'Small morning workout',sub:'Full body activation',time:'6:30–6:37'},
+  {id:'m2',icon:'🧴',ic:'ic-teal',label:'Skin clearing & moisturizer',sub:'Morning acne treatment',time:'6:37–6:40'},
+];
+const EVENING_DEF=[
+  {id:'e1',icon:'📚',ic:'ic-blue',label:'Preparation for school',sub:'Bag, books, homework',time:'20:00'},
+  {id:'e2',icon:'👕',ic:'ic-purple',label:'Clothes & perfume',sub:'Pick outfit for tomorrow',time:'20:00'},
+  {id:'e3',icon:'🚿',ic:'ic-teal',label:'Evening skin clearing',sub:'Shower routine',time:'20:30'},
+  {id:'e4',icon:'🩷',ic:'ic-pink',label:'Acne treatment',sub:'Acnemycin / pink one',time:'20:30'},
+  {id:'e5',icon:'📵',ic:'ic-red',label:'No phone',sub:'30 minutes before sleep',time:'21:00'},
+  {id:'e6',icon:'📺',ic:'ic-blue',label:'Watch 1 anime episode',sub:'Wind down time',time:'21:00–21:30'},
+  {id:'e7',icon:'🦷',ic:'ic-green',label:'Brush teeth',sub:'Evening hygiene',time:'21:30–21:35'},
+  {id:'e8',icon:'📖',ic:'ic-yellow',label:'1 chapter before sleep',sub:'Reading time',time:'21:40–22:00'},
+  {id:'e9',icon:'😴',ic:'ic-purple',label:'Fall asleep',sub:'Lights out',time:'22:15'},
+];
+const HABITS=[
+  {id:'h1',icon:'🚫',label:'No gooning'},
+  {id:'h2',icon:'💬',label:'Talked to a woman'},
+  {id:'h3',icon:'💧',label:'Water 2.5 L'},
+  {id:'h4',icon:'💪',label:'Take creatine'},
+];
+const TOTAL=MORNING_DEF.length+EVENING_DEF.length+HABITS.length;
+const TODAY=new Date().toISOString().slice(0,10);
+const DOW=new Date().getDay();
+const AUTO_WEEKEND=DOW===0||DOW===6;
+
+let manualOverride=null; // null | 'weekday' | 'weekend'
+let state={date:TODAY,tasks:{},water:0,streak:0,lastCompleted:null};
+
+function isWeekend(){return manualOverride?manualOverride==='weekend':AUTO_WEEKEND;}
+
+function shiftTime(t){
+  return t.replace(/(\d{1,2}):(\d{2})/g,(_,h,m)=>((parseInt(h)+1)%24)+':'+m);
+}
+function shifted(arr){
+  const we=isWeekend();
+  return arr.map(t=>({...t,time:we?shiftTime(t.time):t.time}));
+}
+
+function load(){
+  try{
+    const raw=localStorage.getItem('adam-routine-v2');
+    if(raw){
+      const s=JSON.parse(raw);
+      if(s.date===TODAY){state=s;}
+      else{
+        const yd=new Date();yd.setDate(yd.getDate()-1);
+        const wasOk=s.lastCompleted===s.date;
+        state.streak=(s.date===yd.toISOString().slice(0,10)&&wasOk)?s.streak:0;
+        state.lastCompleted=s.lastCompleted;state.date=TODAY;state.tasks={};state.water=0;
+      }
+    }
+  }catch(e){}
+}
+function save(){try{localStorage.setItem('adam-routine-v2',JSON.stringify(state));}catch(e){}}
+
+function doneCount(){return Object.values(state.tasks).filter(Boolean).length;}
+function checkStreak(){
+  if(doneCount()===TOTAL&&state.lastCompleted!==TODAY){
+    state.streak++;state.lastCompleted=TODAY;showToast('🔥 Full routine complete!');
+  }
+}
+
+const CHK=`<svg style="display:block" width="10" height="7" viewBox="0 0 10 7" fill="none"><path d="M1 3.5L3.8 6L9 1" stroke="#0a0a0a" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+
+function buildTasks(list,cid){
+  const c=document.getElementById(cid);c.innerHTML='';
+  list.forEach(t=>{
+    const done=!!state.tasks[t.id];
+    const r=document.createElement('div');
+    r.className='task-row'+(done?' done':'');r.dataset.id=t.id;
+    r.innerHTML=`<div class="task-icon ${t.ic}">${t.icon}</div><div class="task-body"><div class="task-name">${t.label}</div><div class="task-sub">${t.sub}</div></div>${t.time?`<div class="task-time">${t.time}</div>`:''}<div class="task-cb">${done?CHK:''}</div>`;
+    r.addEventListener('click',()=>toggle(t.id));
+    c.appendChild(r);
+  });
+}
+
+function buildHabits(){
+  const g=document.getElementById('habits-grid');g.innerHTML='';
+  HABITS.forEach(h=>{
+    const done=!!state.tasks[h.id];
+    const c=document.createElement('div');
+    c.className='habit-card'+(done?' done':'');c.dataset.id=h.id;
+    c.innerHTML=`<div class="habit-icon">${h.icon}</div><div class="habit-lbl">${h.label}</div><div class="habit-check">${done?CHK:''}</div>`;
+    c.addEventListener('click',()=>toggle(h.id));
+    g.appendChild(c);
+  });
+}
+
+function buildWater(){
+  const row=document.getElementById('drops-row');row.innerHTML='';
+  for(let i=0;i<10;i++){
+    const b=document.createElement('button');
+    b.className='drop-btn'+(i<state.water?' filled':'');b.textContent='💧';
+    b.addEventListener('click',()=>{
+      state.water=(i<state.water)?i:(i+1);save();renderWater();
+    });
+    row.appendChild(b);
+  }
+}
+
+function renderWater(){
+  document.querySelectorAll('.drop-btn').forEach((b,i)=>b.classList.toggle('filled',i<state.water));
+  document.getElementById('hydra-val').textContent=(state.water*0.25).toFixed(1)+'L';
+  const old=!!state.tasks['h3'];
+  state.tasks['h3']=state.water>=10;
+  if(state.tasks['h3']!==old){refreshEl('h3');checkStreak();save();updateStats();}
+}
+
+function refreshEl(id){
+  const el=document.querySelector(`[data-id="${id}"]`);if(!el)return;
+  const done=!!state.tasks[id];
+  el.classList.toggle('done',done);
+  const isH=el.classList.contains('habit-card');
+  const cb=el.querySelector(isH?'.habit-check':'.task-cb');
+  if(cb)cb.innerHTML=done?CHK:'';
+}
+
+function toggle(id){
+  state.tasks[id]=!state.tasks[id];checkStreak();save();refreshEl(id);updateStats();
+}
+
+function updateStats(){
+  const done=doneCount(),rem=TOTAL-done,pct=Math.round(done/TOTAL*100);
+  document.getElementById('streak-num').textContent=state.streak;
+  document.getElementById('streak-sub').textContent=`${state.streak} DAY STREAK · ${done}/${TOTAL} DONE`;
+  document.getElementById('sv-done').textContent=done;
+  document.getElementById('sv-rem').textContent=rem;
+  document.getElementById('sv-pct').textContent=pct+'%';
+  const stars=document.getElementById('streak-stars');stars.innerHTML='';
+  for(let i=0;i<5;i++){const s=document.createElement('span');s.className='star'+(state.streak>i?' lit':'');s.textContent='★';stars.appendChild(s);}
+}
+
+function applyModeUI(){
+  const we=isWeekend();
+  document.body.classList.toggle('weekend-mode',we);
+  document.getElementById('badge-text').textContent=we?'WEEKEND MODE':'WEEKDAY MODE';
+  document.getElementById('we-banner').classList.toggle('show',we);
+  document.getElementById('hero-img').src=we
+    ?'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&q=80'
+    :'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=800&q=80';
+  document.getElementById('morning-range').textContent=we?'7:30 → 7:40':'6:30 → 6:40';
+  document.getElementById('evening-range').textContent=we?'21:00 → 23:15':'20:00 → 22:15';
+  document.getElementById('mode-toggle-btn').textContent=we?'Switch to weekday':'Switch to weekend';
+}
+
+function rebuild(){
+  buildTasks(shifted(MORNING_DEF),'morning-tasks');
+  buildTasks(shifted(EVENING_DEF),'evening-tasks');
+  buildHabits();
+}
+
+function manualToggle(){
+  if(manualOverride===null) manualOverride=isWeekend()?'weekday':'weekend';
+  else manualOverride=manualOverride==='weekend'?'weekday':'weekend';
+  applyModeUI();rebuild();
+  showToast(isWeekend()?'🌙 Weekend — times +1h':'☀️ Weekday mode');
+}
+
+function resetDay(){
+  if(!confirm('Reset all tasks for today?'))return;
+  state.tasks={};state.water=0;
+  if(state.lastCompleted===TODAY){state.streak=Math.max(0,state.streak-1);state.lastCompleted=null;}
+  save();rebuild();buildWater();renderWater();updateStats();showToast('Reset done');
+}
+
+function exportGemini(){
+  const we=isWeekend();
+  const lines=[`My daily routine (${we?'Weekend — times +1h':'Weekday'}):\n`,'## Morning'];
+  shifted(MORNING_DEF).forEach(t=>lines.push(`${t.time} · ${t.label}`));
+  lines.push('\n## Evening');
+  shifted(EVENING_DEF).forEach(t=>lines.push(`${t.time} · ${t.label}`));
+  lines.push('\n## Daily Habits');
+  HABITS.forEach(h=>lines.push(h.label));
+  navigator.clipboard.writeText(lines.join('\n')).then(()=>{
+    showToast('Copied! Opening Gemini…');
+    setTimeout(()=>window.open('https://gemini.google.com/','_blank'),800);
+  }).catch(()=>window.open('https://gemini.google.com/','_blank'));
+}
+
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2400);
+}
+
+// Init
+const d=new Date();
+document.getElementById('hero-date').textContent=
+  d.toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'}).toUpperCase();
+load();applyModeUI();rebuild();buildWater();renderWater();updateStats();
+</script>
+</body>
+</html>
